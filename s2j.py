@@ -160,6 +160,7 @@ class Device(object):
         self.__template = template_id
         self.__pattern = []
         self.__macros = []
+        self.__instances = {'dev': self.__template, 'instances': []}
         Device.__device_count += 1
 
     def __repr__(self):
@@ -173,11 +174,6 @@ class Device(object):
     @staticmethod
     def last_index():
         return Device.__device_count - 1
-
-    def json_serialiseable(self):
-        return {'template': self.__template,
-                'pattern' : self.__pattern,
-                'macros'  : self.__macros}
 
     @property
     def template(self):
@@ -203,8 +199,11 @@ class Device(object):
     def macros(self, macro_list):
         self.__macros = macro_list
 
-    def write_json(self):
-        devinst: Dict[str, Union[List[Any], Any]] = {'dev': self.__template, 'instances': []}
+    @property
+    def instances(self):
+        return self.__instances
+
+    def associate(self):
         i = 0
         arginst = {}
 
@@ -214,9 +213,10 @@ class Device(object):
             for entry in self.__macros:
                 arginst[self.__pattern[i]] = self.__macros[i]
                 i += 1
-                devinst['instances'].append(arginst)
+                self.__instances['instances'].append(arginst)
 
-        j = json.dumps(devinst)
+    def write_json(self):
+        j = json.dumps(self.__instances)
         print('Writing JSON file for {0}'.format(self.__template))
         print(j)
 
@@ -227,33 +227,29 @@ class Substitutions(object):
         self._name = name
         self._devices = []
 
-    @staticmethod
-    def serialize_objects(obj):
-        # serialize datetime object
-
-        if isinstance(obj, list):
-            for item in obj:
-                if isinstance(obj, Device):
-                    return {'device': str(obj.__dict__)}
-
-        if isinstance(obj, Device):
-            return {'device': str(obj.__dict__)}
-
     def add_device(self, dev):
         self._devices.append(dev)
 
     def to_json(self, fn):
         with open(fn, 'w') as f:
-            output_object = {'FE': 'FE02I', 'devices': self.to_obj()}
-            # output_object = {'FE': 'FE02I', 'devices': []}
+            output_object = {'IOC': self._name, 'devices': self.to_obj()}
             json.dump(output_object, f)
             f.close()
 
     def to_obj(self):
         devlist = []
         for dev in self._devices:
-            devlist.append(dev.json_serialiseable())
+            dev.associate()
+            devlist.append(dev.instances)
         return devlist
+
+
+def error_exit(errmsgs):
+    usage = "usage: subst2json -i <ioc_name> [-f <filename>] <-t test mode> <-d debug mode>"
+    print(usage)
+    if isinstance(errmsgs, list):
+        for msg in errmsgs:
+            print(msg)
 
 
 def main():
@@ -261,9 +257,12 @@ def main():
     global testmode
 
     usage = "usage: %(prog)s [-f filename] <-t test mode> <-d debug mode>"
+    errmsgs = []
+
     parser = ArgumentParser(usage=usage)
     parser.add_argument('-f', '--file', nargs='+')
     parser.add_argument('-o', '--outputfile', nargs='+')
+    parser.add_argument('-i', '--ioc', nargs='+')
     parser.add_argument('-t', '--test', action='store_true')
     parser.add_argument('-d', '--debug', action='store_true')
 
@@ -278,54 +277,64 @@ def main():
         filename = args.file[0]
     else:
         filename = None
+        errmsgs.append('Must Specify substitutions file name (-f <filename>')
+
     if args.outputfile:
         outputfile = args.outputfile[0]
     else:
         outputfile = None
+    if args.ioc:
+        iocname = args.ioc[0]
+    else:
+        iocname = None
+        errmsgs.append('Must Specify IOC name (-i <name>)')
 
-    devices = []
+    if len(errmsgs) > 0:
+        error_exit(errmsgs)
+    else:  # All good
+        devices = []
 
-    if filename is not None:
-        print('Filename: {0}'.format(filename))
-        fhandler = FileHandler(filename)
-        if fhandler is not None:
-            _template = None
-            _pattern = []
-            _macros = []
-            _substitutions = Substitutions('FE02I')
+        if filename is not None:
+            print('Filename: {0}'.format(filename))
+            fhandler = FileHandler(filename)
+            if fhandler is not None:
+                _template = None
+                _pattern = []
+                _macros = []
+                _substitutions = Substitutions(iocname)
 
-            # First thing - look for a template instantiation
-            StateMachine.state = State.SEEKING_TEMPLATE
-            while True:
-                if StateMachine.state == State.SEEKING_TEMPLATE:
-                    eof, _template = fhandler.get_next_template()
-                    if (not eof) and (_template is not None):
-                        device = Device(_template)
-                        devices.append(device)
-                        _substitutions.add_device(device)
-                        StateMachine.state = State.SEEKING_PATTERN
-                    else:
-                        StateMachine.state = State.eof
+                # First thing - look for a template instantiation
+                StateMachine.state = State.SEEKING_TEMPLATE
+                while True:
+                    if StateMachine.state == State.SEEKING_TEMPLATE:
+                        eof, _template = fhandler.get_next_template()
+                        if (not eof) and (_template is not None):
+                            device = Device(_template)
+                            devices.append(device)
+                            _substitutions.add_device(device)
+                            StateMachine.state = State.SEEKING_PATTERN
+                        else:
+                            StateMachine.state = State.eof
 
-                elif StateMachine.state == State.SEEKING_PATTERN:
-                    _pattern = fhandler.get_pattern()
-                    devices[Device.last_index()].pattern = _pattern
-                    StateMachine.state = State.SEEKING_MACROS
+                    elif StateMachine.state == State.SEEKING_PATTERN:
+                        _pattern = fhandler.get_pattern()
+                        devices[Device.last_index()].pattern = _pattern
+                        StateMachine.state = State.SEEKING_MACROS
 
-                elif StateMachine.state == State.SEEKING_MACROS:
-                    _macros = fhandler.get_macros()
-                    if _macros is not None:
-                        devices[Device.last_index()].macros = _macros
-                        # devices[Device.last_index()].write_json()
-                    StateMachine.state = State.SEEKING_TEMPLATE
+                    elif StateMachine.state == State.SEEKING_MACROS:
+                        _macros = fhandler.get_macros()
+                        if _macros is not None:
+                            devices[Device.last_index()].macros = _macros
+                            # devices[Device.last_index()].write_json()
+                        StateMachine.state = State.SEEKING_TEMPLATE
 
-                elif StateMachine.state == State.eof:
-                    print('=== eof ===')
-                    print('Device templates found: {0}'.format(Device.count()))
-                    if outputfile is not None:
-                        _substitutions.to_json(outputfile)
+                    elif StateMachine.state == State.eof:
+                        print('=== eof ===')
+                        print('Device templates found: {0}'.format(Device.count()))
+                        if outputfile is not None:
+                            _substitutions.to_json(outputfile)
 
-                    break
+                        break
 
 
 if __name__ == '__main__':
