@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import getopt
 import os
 from typing import Dict, List, Any, Union
@@ -53,7 +55,21 @@ class StateMachine(object):
         StateMachine.__state = newstate
 
 
+class LineAttributes(Enum):
+    """ class LineAttributes
+    A simple collection of enumerations to return a hint attribute from the FileHandler class method readline()
+    """
+    WHITESPACE = auto()
+    COMMENT = auto()
+    PATTERN = auto()
+    TEMPLATE = auto()
+    MACROS = auto()
+    GENERAL = auto()
+    UNDEF = auto()
+
+
 class FileHandler(object):
+
     def __init__(self, filename):
         if os.path.isfile(filename):
             self._f = open(filename, 'r')
@@ -73,18 +89,26 @@ class FileHandler(object):
 
     def readline(self):
         line = None
+        attr = LineAttributes.UNDEF
         if self._f is not None:
             if not self._f.closed:
                 line = self._f.readline()
                 if len(line) == 0:
                     self.__eof = True
                     self._f.close()
-        return line
+                else:
+                    attr = LineAttributes.GENERAL
+                    line = line.strip()
+                    if line.startswith('#'):
+                        attr = LineAttributes.COMMENT
+                    elif line.startswith('{') and line.endswith('}'):
+                        attr = LineAttributes.MACROS
+        return line, attr
 
     def get_next_template(self):
         _template_name = None
         while (not self.eof) and (_template_name is None):
-            line = self.readline()
+            line, attr = self.readline()
             if not self.eof:
                 #  print('get_next_template(): Line => {0}'.format(line))
                 res = self.re_template.search(line)
@@ -98,7 +122,7 @@ class FileHandler(object):
     def get_pattern(self):
         _pattern = []
         while (not self.eof) and (len(_pattern) == 0):
-            line = self.readline()
+            line, attr = self.readline()
             if not self.eof:
                 res = self.re_pattern.findall(line)
 
@@ -110,46 +134,38 @@ class FileHandler(object):
             # print('get_pattern(): => {0}'.format(_pattern))
         return _pattern
 
-    def get_macros_regex(self):
-        _macros = []
-        while (not self.eof) and (len(_macros) == 0):
-            line = self.readline()
-            if not self.eof:
-                res = self.re_macros.findall(line)
-
-                if (res is not None) and (len(res) > 0):
-                    for i in range(len(res)):
-                        _macros.append(res[i])
-                    break
-
-            # print('get_macros(): => {0}'.format(_macros))
-        return _macros
-
     def get_macros(self):
-        _macros = []
-        while (not self.eof) and (len(_macros) == 0):
-            line = self.readline()
+        end_of_block = False
+        _macros_table = []
+        instance = 0
+        while not end_of_block:
+            line, attr = self.readline()
             if not self.eof:
                 # Split the line, removing enclosing '{}' and delimiting on ','
                 #  res = self.re_macros.findall(line)
                 #  Remove leading and trailing whitespace
-                line = line.strip()
 
                 # The first and last character of a valid macro line should be '{'
-                if line.startswith('{') and line.endswith('}'):
+                if attr == LineAttributes.MACROS:
                     # Remove the leading and trailing braces
                     line = line.strip('{}')
 
                     # Split the line into discrete arguments delimited by ','
                     res = line.split(',')
 
+                    _macros = []
                     if (res is not None) and (len(res) > 0):
                         for i in range(len(res)):
                             _macros.append(res[i].strip(' \"'))  # Removing enclosing whitespace and quotes
-                        break
+                        _macros_table.append(_macros)
+
+                elif line.startswith('}'):  # terminating macro block
+                    end_of_block = True
+            else:  # EOF
+                end_of_block = True
 
             # print('get_macros(): => {0}'.format(_macros))
-        return _macros
+        return _macros_table
 
 
 class Device(object):
@@ -199,21 +215,26 @@ class Device(object):
     def macros(self, macro_list):
         self.__macros = macro_list
 
+    def set_macros_list_list(self, macros_list_list):
+        self.__macros = macros_list_list
+
     @property
     def instances(self):
         return self.__instances
 
     def associate(self):
-        i = 0
         arginst = {}
 
-        # Ensure that the number of macro args equals the number of pattern args
-        if len(self.__macros) == len(self.__pattern):
-            # Iterate through the macros and associate them with the pattern args
-            for entry in self.__macros:
-                arginst[self.__pattern[i]] = self.__macros[i]
-                i += 1
-                self.__instances['instances'].append(arginst)
+        for macroline in self.__macros:
+            # Ensure that the number of macro args equals the number of pattern args
+            if len(macroline) == len(self.__pattern):
+                # Iterate through the macros and associate them with the pattern args
+                i = 0
+                arginst.clear()
+                for entry in macroline:
+                    arginst[self.__pattern[i]] = macroline[i]
+                    i += 1
+                self.__instances['instances'].append(arginst.copy())
 
     def write_json(self):
         j = json.dumps(self.__instances)
@@ -300,7 +321,7 @@ def main():
             if fhandler is not None:
                 _template = None
                 _pattern = []
-                _macros = []
+                _macros_table = []
                 _substitutions = Substitutions(iocname)
 
                 # First thing - look for a template instantiation
@@ -322,9 +343,10 @@ def main():
                         StateMachine.state = State.SEEKING_MACROS
 
                     elif StateMachine.state == State.SEEKING_MACROS:
-                        _macros = fhandler.get_macros()
-                        if _macros is not None:
-                            devices[Device.last_index()].macros = _macros
+                        _macros_table = fhandler.get_macros()
+                        if len(_macros_table) > 0:
+                            devices[Device.last_index()].set_macros_list_list(_macros_table)
+                            # devices[Device.last_index()].macros.append(_macros_table)
                             # devices[Device.last_index()].write_json()
                         StateMachine.state = State.SEEKING_TEMPLATE
 
