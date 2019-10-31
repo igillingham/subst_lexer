@@ -1,0 +1,1115 @@
+# EtherCAT Master
+
+file $(ETHERCAT)/db/MASTER.template
+{   
+pattern {       DEVICE            , PORT    , SCAN     }
+        { FE02I-CS-ECAT-01:MASTER , MASTER0 , "I/O Intr" } 
+}
+
+
+
+# Analogue inputs
+
+# --- Added 14 August 2019 for pneumatic air pressure monitoring ---
+#
+# EL3104:
+# 4 channel, +/-10V, 16 bits
+#
+file $(ETHERCAT)/db/EL3104.template
+{
+pattern {       DEVICE    , PORT, SCAN     }
+        { FE02I-CS-ADC-05 , AI4 , "I/O Intr" }
+}
+
+#
+# EL3702:
+# 2 channel, +/-10V, 16 bits oversampling
+#
+#file $(ETHERCAT)/db/EL3702.template
+#{   
+#pattern {       DEVICE    , PORT, SCAN     }
+#        { FE02I-CS-ADC-02 , AI1 , "I/O Intr" } 
+#        { FE02I-CS-ADC-03 , AI2 , "I/O Intr" } 
+#        { FE02I-CS-ADC-04 , AI3 , "I/O Intr" } 
+#}
+
+# Macros:
+#  DEVICE   EtherCAT slave
+#  CHANNEL  ADC channel
+#  PORT     asyn port for EtherCAT slave
+#  SAMPLES  number of samples in waveform
+#  SCAN     polling period
+#  INTSCAN  polling period for the INTERRUPT parameter
+#file $(ETHERCAT)/db/gadc.template
+#{
+#pattern { DEVICE       , CHANNEL, PORT , SAMPLES, SCAN      , INTSCAN    }
+#    { "FE02I-CS-ADC-02", "1"    , "AI1", "1000" , "I/O Intr", "I/O Intr" }
+#    { "FE02I-CS-ADC-02", "2"    , "AI1", "1000" , "I/O Intr", "I/O Intr" }
+#    { "FE02I-CS-ADC-03", "1"    , "AI2", "1000" , "I/O Intr", "I/O Intr" }
+#    { "FE02I-CS-ADC-03", "2"    , "AI2", "1000" , "I/O Intr", "I/O Intr" }
+#    { "FE02I-CS-ADC-04", "1"    , "AI3", "1000" , "I/O Intr", "I/O Intr" }
+#    { "FE02I-CS-ADC-04", "2"    , "AI3", "1000" , "I/O Intr", "I/O Intr" }
+#}
+
+
+# Macros:
+#  DEVICE   EtherCAT slave
+#  CHANNEL  ADC channel
+#  PORT     asyn port for EtherCAT slave
+#  SAMPLES  number of samples in waveform
+#  SCAN     polling period
+#  INTSCAN  polling period for the INTERRUPT parameter
+#  name     name for gui element
+file $(ETHERCAT)/db/gadc.template
+{
+pattern { DEVICE           , CHANNEL, PORT    , SAMPLES, SCAN      , INTSCAN   , name  }
+        { "FE02I-CS-ADC-02", "1"    , "AI1"   , "10"  , "I/O Intr", "I/O Intr", "GT1" }
+        { "FE02I-CS-ADC-02", "2"    , "AI1"   , "10"  , "I/O Intr", "I/O Intr", "GT2" }
+        { "FE02I-CS-ADC-03", "1"    , "AI2"   , "10"  , "I/O Intr", "I/O Intr", "GT3" }
+        { "FE02I-CS-ADC-03", "2"    , "AI2"   , "10"  , "I/O Intr", "I/O Intr", "GT4" }
+        { "FE02I-CS-ADC-04", "1"    , "AI3"   , "10"  , "I/O Intr", "I/O Intr", "GT5" }
+        { "FE02I-CS-ADC-04", "2"    , "AI3"   , "10"  , "I/O Intr", "I/O Intr", "GT6" }
+}
+
+# Front End EPICS substitution file
+# Generated from Velocity template - fe.vm
+
+
+# Switch to force valve-sub.vm to use _asyn suffixed templates for FINS protocol
+
+
+# Initialise templates for a Front-End vacuumSpace
+# Ian Gillingham - 24/02/05
+#
+# substitutions:
+# FE_AREA - Front End ID number
+# device  - device name
+# delay   - 
+# dom     - domain
+# g1-g20  - ids of gauges (make up to 20 by duplicating first gauge)
+# p1-p20  - ids of pumps  (make up to 20 by duplicating first pump)
+# 
+# Vacuum Spaces
+#
+#file space.template
+#{
+#pattern {       device              ,       ionp               ,       gauge               ,       img               ,       pirg               ,       valve    }
+#
+#        { FE02I-VA-SPACE-01 , FE02I-VA-IONP-91 , FE02I-VA-GAUGE-91 , FE02I-VA-IMG-91 , FE02I-VA-PIRG-91 , FE02I-VA-VALVE-01 } 
+#        { FE02I-VA-SPACE-02 , FE02I-VA-IONP-93 , FE02I-VA-GAUGE-92 , FE02I-VA-IMG-92 , FE02I-VA-PIRG-92 , FE02I-VA-VALVE-02 } 
+#
+#        { FE02I-VA-SPACE-99 , FE02I-VA-IONP-99 , FE02I-VA-GAUGE-99 , FE02I-VA-IMG-99 , FE02I-VA-PIRG-99 , FE02I-VA-GVALV-01 } 
+#}
+file space_b.template
+{
+pattern {       device              ,       ionp               ,       gauge               ,       img               ,       pirg               ,       valve    }
+
+        { FE02I-VA-SPACE-01 , FE02I-VA-IONP-91 , FE02I-VA-GAUGE-91 , FE02I-VA-IMG-91 , FE02I-VA-PIRG-91 , FE02I-VA-VALVE-01 } 
+        { FE02I-VA-SPACE-02 , FE02I-VA-IONP-93 , FE02I-VA-GAUGE-92 , FE02I-VA-IMG-92 , FE02I-VA-PIRG-92 , FE02I-VA-VALVE-02 } 
+
+        { FE02I-VA-SPACE-99 , FE02I-VA-IONP-99 , FE02I-VA-GAUGE-99 , FE02I-VA-IMG-99 , FE02I-VA-PIRG-99 , FE02I-VA-GVALV-01 } 
+}
+
+
+#
+# GROUPS
+#
+
+file dlsPLC_vacValveGroup.template
+{
+pattern { device, delay, valve1, valve2, valve3, valve4, valve5, valve6, valve7, valve8 }
+
+        { FE02I-VA-GVALV-01 , 0 ,
+          FE02I-VA-VALVE-01 , FE02I-VA-VALVE-01 , FE02I-VA-VALVE-01 , FE02I-VA-VALVE-01 ,
+          FE02I-VA-VALVE-01 , FE02I-VA-VALVE-01 , FE02I-VA-VALVE-01 , FE02I-VA-VALVE-02 
+        }
+}
+
+file digitelMpcIonpGroup.template
+{
+pattern { device, delay, ionp1, ionp2, ionp3, ionp4, ionp5, ionp6, ionp7, ionp8 }
+
+        { FE02I-VA-IONP-91 ,5 , FE02I-VA-IONP-01 ,FE02I-VA-IONP-02 ,FE02I-VA-IONP-01 ,FE02I-VA-IONP-01 ,FE02I-VA-IONP-01 ,FE02I-VA-IONP-01 ,FE02I-VA-IONP-01 ,FE02I-VA-IONP-01 }
+        { FE02I-VA-IONP-92 ,5 , FE02I-VA-IONP-03 ,FE02I-VA-IONP-04 ,FE02I-VA-IONP-03 ,FE02I-VA-IONP-03 ,FE02I-VA-IONP-03 ,FE02I-VA-IONP-03 ,FE02I-VA-IONP-03 ,FE02I-VA-IONP-03 }
+        { FE02I-VA-IONP-93 ,5 , FE02I-VA-IONP-92 ,FE02I-VA-IONP-05 ,FE02I-VA-IONP-05 ,FE02I-VA-IONP-05 ,FE02I-VA-IONP-05 ,FE02I-VA-IONP-05 ,FE02I-VA-IONP-05 ,FE02I-VA-IONP-05 }
+        { FE02I-VA-IONP-99 ,5 , FE02I-VA-IONP-91 ,FE02I-VA-IONP-92 ,FE02I-VA-IONP-93 ,FE02I-VA-IONP-93 ,FE02I-VA-IONP-93 ,FE02I-VA-IONP-93 ,FE02I-VA-IONP-93 ,FE02I-VA-IONP-93 }
+}
+
+
+file mks937bGaugeGroup.template
+{
+pattern {device, gauge1, gauge2, gauge3, gauge4, gauge5, gauge6, gauge7, gauge8}
+        {FE02I-VA-GAUGE-91 ,FE02I-VA-GAUGE-01 ,FE02I-VA-GAUGE-02 ,FE02I-VA-GAUGE-01 ,FE02I-VA-GAUGE-01 ,FE02I-VA-GAUGE-01 ,FE02I-VA-GAUGE-01 ,FE02I-VA-GAUGE-01 ,FE02I-VA-GAUGE-01}
+        {FE02I-VA-GAUGE-92 ,FE02I-VA-GAUGE-03 ,FE02I-VA-GAUGE-04 ,FE02I-VA-GAUGE-05 ,FE02I-VA-GAUGE-06 ,FE02I-VA-GAUGE-06 ,FE02I-VA-GAUGE-06 ,FE02I-VA-GAUGE-06 ,FE02I-VA-GAUGE-06}
+        {FE02I-VA-GAUGE-99 ,FE02I-VA-GAUGE-91 ,FE02I-VA-GAUGE-92 ,FE02I-VA-GAUGE-91 ,FE02I-VA-GAUGE-91 ,FE02I-VA-GAUGE-91 ,FE02I-VA-GAUGE-91 ,FE02I-VA-GAUGE-91 ,FE02I-VA-GAUGE-91}
+}
+file mks937bImgGroup.template
+{
+pattern {device, delay, img1, img2, img3, img4, img5, img6, img7, img8}
+        {FE02I-VA-IMG-91 ,0 ,FE02I-VA-IMG-01 ,FE02I-VA-IMG-02 ,FE02I-VA-IMG-01 ,FE02I-VA-IMG-01 ,FE02I-VA-IMG-01 ,FE02I-VA-IMG-01 ,FE02I-VA-IMG-01 ,FE02I-VA-IMG-01}
+        {FE02I-VA-IMG-92 ,0 ,FE02I-VA-IMG-03 ,FE02I-VA-IMG-04 ,FE02I-VA-IMG-05 ,FE02I-VA-IMG-06 ,FE02I-VA-IMG-06 ,FE02I-VA-IMG-06 ,FE02I-VA-IMG-06 ,FE02I-VA-IMG-06}
+        {FE02I-VA-IMG-99 ,0 ,FE02I-VA-IMG-91 ,FE02I-VA-IMG-92 ,FE02I-VA-IMG-91 ,FE02I-VA-IMG-91 ,FE02I-VA-IMG-91 ,FE02I-VA-IMG-91 ,FE02I-VA-IMG-91 ,FE02I-VA-IMG-91}
+}
+file mks937bPirgGroup.template
+{
+pattern {device, pirg1, pirg2, pirg3, pirg4, pirg5, pirg6, pirg7, pirg8}
+        {FE02I-VA-PIRG-91 ,FE02I-VA-PIRG-01 ,FE02I-VA-PIRG-02 ,FE02I-VA-PIRG-01 ,FE02I-VA-PIRG-01 ,FE02I-VA-PIRG-01 ,FE02I-VA-PIRG-01 ,FE02I-VA-PIRG-01 ,FE02I-VA-PIRG-01}
+        {FE02I-VA-PIRG-92 ,FE02I-VA-PIRG-03 ,FE02I-VA-PIRG-04 ,FE02I-VA-PIRG-05 ,FE02I-VA-PIRG-06 ,FE02I-VA-PIRG-06 ,FE02I-VA-PIRG-06 ,FE02I-VA-PIRG-06 ,FE02I-VA-PIRG-06}
+        {FE02I-VA-PIRG-99 ,FE02I-VA-PIRG-91 ,FE02I-VA-PIRG-92 ,FE02I-VA-PIRG-91 ,FE02I-VA-PIRG-91 ,FE02I-VA-PIRG-91 ,FE02I-VA-PIRG-91 ,FE02I-VA-PIRG-91 ,FE02I-VA-PIRG-91}
+}
+
+#file frontendValveGroup.template
+file frontendValveSNL.template
+{
+pattern { device, fvdelay, abdelay, valve1, valve2, fvalve, absb }
+        { FE02I-VA-GVALV-01 ,2 ,5 ,FE02I-VA-VALVE-01 ,FE02I-VA-VALVE-02 ,FE02I-VA-FVALV-01 ,FE02I-RS-ABSB-01 }
+}
+
+# Beamline control interface PVs
+#
+file beamline_access.template
+{
+pattern { device }
+        { FE02I-CS-BEAM-01 }
+}
+
+file ValveSequencer.template
+{
+pattern { device }
+        { FE02I }
+}
+
+
+
+
+# Initialise templates for an MKS937B Multi-Sensor System
+# Ian Gillingham - Sept 2010
+#
+# substitutions:
+# device  - device name
+# port    - serial port (steam device code ie /ty/0/1 => ty_0_1)
+# channel - MKS 937B channel number (1-5)
+# dom     - domain
+# id      - ID
+# c       - ADC card number
+# s       - ADC signal number
+# Controller
+#
+file mks937b.template
+{
+pattern { device             , address ,  port   }
+        { FE02I-VA-GCTLR-01,  001, ts1_1}
+		        { FE02I-VA-GCTLR-02,  001, ts1_2}
+		        { FE02I-VA-GCTLR-03,  001, ts1_3}
+		}
+
+
+
+
+
+# Gauges
+#
+# substitutions:
+# device  - device name
+# port    - serial port (steam device code ie /ty/0/1 => ty_0_1)
+# channel - MKS 937B channel number (1-4)
+#
+# IMGs
+# Inverted Magnetron guages on channels CC & A (1 & 2)
+file mks937bImg.template
+{
+pattern { device          , port    , address, channel, ctl_channel, ilk_write_access_pv }
+        { FE02I-VA-IMG-01, ts1_1, 001, 1, 0, FE02I-VA-GAUGE-01:ILKSETSP:NOWRITE}
+		        { FE02I-VA-IMG-02, ts1_1, 001, 3, 1, FE02I-VA-GAUGE-02:ILKSETSP:NOWRITE}
+		        { FE02I-VA-IMG-03, ts1_2, 001, 1, 0, FE02I-VA-GAUGE-03:ILKSETSP:NOWRITE}
+		        { FE02I-VA-IMG-04, ts1_3, 001, 1, 0, FE02I-VA-GAUGE-04:ILKSETSP:NOWRITE}
+		        { FE02I-VA-IMG-05, ts1_2, 001, 3, 1, FE02I-VA-GAUGE-05:ILKSETSP:NOWRITE}
+		        { FE02I-VA-IMG-06, ts1_3, 001, 3, 1, FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE}
+		}
+
+
+
+
+
+
+# Gauges
+#
+# substitutions:
+# device  - device name
+# port    - serial port (steam device code ie /ty/0/1 => ty_0_1)
+# channel - MKS 937B channel number (1-4)
+#
+# pirani gauges 
+# Slot B port 1 is channel 4. Slot B port 2 is channel 5
+#
+file mks937bPirg.template
+{
+pattern { device           , port    , address, channel }
+        { FE02I-VA-PIRG-01, ts1_1, 001, 5}
+		        { FE02I-VA-PIRG-02, ts1_1, 001, 6}
+		        { FE02I-VA-PIRG-03, ts1_2, 001, 5}
+		        { FE02I-VA-PIRG-04, ts1_3, 001, 5}
+		        { FE02I-VA-PIRG-05, ts1_2, 001, 6}
+		        { FE02I-VA-PIRG-06, ts1_3, 001, 6}
+		}
+
+
+
+
+# Combination Gauges
+#
+# substitutions:
+# domain - Front End domain
+# ID    	- gauge id value
+# card 	- Card number of ADC carrier
+# signal	- ADC channel number
+#
+file mks937bGauge.template
+{
+pattern { dom   , id , plog_adc_pv }
+        { FE02I, 01, FE02I-CS-ADC-02:ADC1_VALUE}
+		        { FE02I, 02, FE02I-CS-ADC-02:ADC2_VALUE}
+		        { FE02I, 03, FE02I-CS-ADC-03:ADC1_VALUE}
+		        { FE02I, 04, FE02I-CS-ADC-04:ADC1_VALUE}
+		        { FE02I, 05, FE02I-CS-ADC-03:ADC2_VALUE}
+		        { FE02I, 06, FE02I-CS-ADC-04:ADC2_VALUE}
+		}
+
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-IMG-01:RLY1, ts1_1, 001, 1, "Valve I/L On", "Valve I/L Off", FE02I-VA-GAUGE-01:ILKSETSP:NOWRITE, 1.0e-6, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-01:RLY2, ts1_1, 001, 2, "MPS I/L 1", "", FE02I-VA-GAUGE-01:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-01:RLY3, ts1_1, 001, 3, "MPS I/L 2", "", FE02I-VA-GAUGE-01:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-01:RLY4, ts1_1, 001, 4, "RGA I/L", "", FE02I-VA-GAUGE-01:ILKSETSP:NOWRITE, 1.0e-4, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-4, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-IMG-02:RLY1, ts1_1, 001, 5, "Valve I/L On", "Valve I/L Off", FE02I-VA-GAUGE-02:ILKSETSP:NOWRITE, 1.0e-6, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-02:RLY2, ts1_1, 001, 6, "MPS I/L 1", "", FE02I-VA-GAUGE-02:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-02:RLY3, ts1_1, 001, 7, "MPS I/L 2", "", FE02I-VA-GAUGE-02:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-02:RLY4, ts1_1, 001, 8, "RGA I/L", "", FE02I-VA-GAUGE-02:ILKSETSP:NOWRITE, 1.0e-4, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-4, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-IMG-03:RLY1, ts1_2, 001, 1, "Valve I/L On", "Valve I/L Off", FE02I-VA-GAUGE-03:ILKSETSP:NOWRITE, 1.0e-6, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-03:RLY2, ts1_2, 001, 2, "MPS I/L 1", "", FE02I-VA-GAUGE-03:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-03:RLY3, ts1_2, 001, 3, "MPS I/L 2", "", FE02I-VA-GAUGE-03:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-03:RLY4, ts1_2, 001, 4, "RGA I/L", "", FE02I-VA-GAUGE-03:ILKSETSP:NOWRITE, 1.0e-4, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-4, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-IMG-05:RLY1, ts1_2, 001, 5, "Valve I/L On", "Valve I/L Off", FE02I-VA-GAUGE-05:ILKSETSP:NOWRITE, 1.0e-6, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-05:RLY2, ts1_2, 001, 6, "MPS I/L 1", "", FE02I-VA-GAUGE-05:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-05:RLY3, ts1_2, 001, 7, "MPS I/L 2", "", FE02I-VA-GAUGE-05:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-05:RLY4, ts1_2, 001, 8, "RGA I/L", "", FE02I-VA-GAUGE-05:ILKSETSP:NOWRITE, 1.0e-4, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-4, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-IMG-04:RLY1, ts1_3, 001, 1, "Valve I/L On", "Valve I/L Off", FE02I-VA-GAUGE-04:ILKSETSP:NOWRITE, 1.0e-6, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-04:RLY2, ts1_3, 001, 2, "MPS I/L 1", "", FE02I-VA-GAUGE-04:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-04:RLY3, ts1_3, 001, 3, "MPS I/L 2", "", FE02I-VA-GAUGE-04:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-04:RLY4, ts1_3, 001, 4, "RGA I/L", "", FE02I-VA-GAUGE-04:ILKSETSP:NOWRITE, 1.0e-4, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-4, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-IMG-06:RLY1, ts1_3, 001, 5, "Valve I/L On", "Valve I/L Off", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-6, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-06:RLY2, ts1_3, 001, 6, "MPS I/L 1", "", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-06:RLY3, ts1_3, 001, 7, "MPS I/L 2", "", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-7, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-6, 9.0e-7}
+		        { FE02I-VA-IMG-06:RLY4, ts1_3, 001, 8, "RGA I/L", "", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-4, 1.2e-2, 2.7e-10, 1.2e-2, 2.7e-10, 1.3e-2, 2.6e-10, 1.1e-4, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-PIRG-01:RLY1, ts1_1, 001, 9, "Ion Pump I/L On", "Ion Pump I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-3, 950, 2.7e-3, 119, 2.6e-3, 1.1e-2, 2.0e-3}
+		        { FE02I-VA-PIRG-01:RLY2, ts1_1, 001, 10, "MPS I/L 1", "MPS I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-10, 950, 2.7e-10, 119, 2.6e-10, 950, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-PIRG-02:RLY1, ts1_1, 001, 11, "Ion Pump I/L On", "Ion Pump I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-3, 950, 2.7e-3, 119, 2.6e-3, 1.1e-2, 2.0e-3}
+		        { FE02I-VA-PIRG-02:RLY2, ts1_1, 001, 12, "MPS I/L 1", "MPS I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-10, 950, 2.7e-10, 119, 2.6e-10, 950, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-PIRG-03:RLY1, ts1_2, 001, 9, "Ion Pump I/L On", "Ion Pump I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-3, 950, 2.7e-3, 119, 2.6e-3, 1.1e-2, 2.0e-3}
+		        { FE02I-VA-PIRG-03:RLY2, ts1_2, 001, 10, "MPS I/L 1", "MPS I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-10, 950, 2.7e-10, 119, 2.6e-10, 950, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-PIRG-05:RLY1, ts1_2, 001, 11, "Ion Pump I/L On", "Ion Pump I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-3, 950, 2.7e-3, 119, 2.6e-3, 1.1e-2, 2.0e-3}
+		        { FE02I-VA-PIRG-05:RLY2, ts1_2, 001, 12, "MPS I/L 1", "MPS I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-10, 950, 2.7e-10, 119, 2.6e-10, 950, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-PIRG-04:RLY1, ts1_3, 001, 9, "Ion Pump I/L On", "Ion Pump I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-3, 950, 2.7e-3, 119, 2.6e-3, 1.1e-2, 2.0e-3}
+		        { FE02I-VA-PIRG-04:RLY2, ts1_3, 001, 10, "MPS I/L 1", "MPS I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-10, 950, 2.7e-10, 119, 2.6e-10, 950, 9.0e-7}
+		}
+
+
+
+
+file mks937bRelays.template
+{
+pattern{ device             , port     , address, relay_number, relay_desc    ,relay_off_desc , ilk_write_access_pv, relay_level, relay_drvh, relay_drvl, relay_hopr, relay_lopr, relay_hihi, relay_lolo, relay_high, relay_low }
+        { FE02I-VA-PIRG-06:RLY1, ts1_3, 001, 11, "Ion Pump I/L On", "Ion Pump I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-3, 950, 2.7e-3, 119, 2.6e-3, 1.1e-2, 2.0e-3}
+		        { FE02I-VA-PIRG-06:RLY2, ts1_3, 001, 12, "MPS I/L 1", "MPS I/L", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE, 1.0e-2, 950, 2.7e-10, 950, 2.7e-10, 119, 2.6e-10, 950, 9.0e-7}
+		}
+
+
+
+
+
+file mks937bFastRelay.template
+{
+pattern {     device    ,  port   , address, channel, frcsp_desc, frcsp_level, ilk_write_access_pv }
+        { FE02I-VA-IMG-01, ts1_1, 001, 1, "FastValve I/L", "1.0e-5", FE02I-VA-GAUGE-01:ILKSETSP:NOWRITE}
+		        { FE02I-VA-IMG-02, ts1_1, 001, 3, "FastValve I/L", "1.0e-5", FE02I-VA-GAUGE-02:ILKSETSP:NOWRITE}
+		        { FE02I-VA-IMG-03, ts1_2, 001, 1, "FastValve I/L", "1.0e-5", FE02I-VA-GAUGE-03:ILKSETSP:NOWRITE}
+		        { FE02I-VA-IMG-04, ts1_3, 001, 1, "FastValve I/L", "1.0e-5", FE02I-VA-GAUGE-04:ILKSETSP:NOWRITE}
+		        { FE02I-VA-IMG-05, ts1_2, 001, 3, "FastValve I/L", "1.0e-5", FE02I-VA-GAUGE-05:ILKSETSP:NOWRITE}
+		        { FE02I-VA-IMG-06, ts1_3, 001, 3, "FastValve I/L", "1.0e-5", FE02I-VA-GAUGE-06:ILKSETSP:NOWRITE}
+		}
+
+
+
+
+
+# Ion pumps
+#
+# substitutions:
+# device  - device name
+# port    - serial port (device manager port number)
+# unit    - unit number for multi-drop serial (5 by default)
+# pump    - ion pump number (1 or 2)
+#
+# Digitel MPC pump controllers
+#
+# substitutions:
+# device  - device name
+# port    - serial port (device manager port number)
+# unit    - unit number for multi-drop serial (5 by default)
+#    The following two values are required to satisfy the new digitelMPC template (4-12 +)
+#    and should be set to zero if not used (as for Front Ends)
+# spon    - Setpoint On 
+# spoff   - Setpoint Off
+#
+# Controller
+#
+
+file digitelMpc.template
+{
+pattern { device          , port , unit }
+        { FE02I-VA-MPC-01, ts1_4, 01}    
+		        { FE02I-VA-MPC-02, ts1_5, 01}    
+		}
+
+file digitelMpcIonp.template
+{
+pattern {    device    , port, unit, pump, size, spon, spoff }
+        { FE02I-VA-IONP-01, ts1_4, 01, 1, 500, 0, 0}    
+                { FE02I-VA-IONP-02, ts1_4, 01, 2, 500, 0, 0}    
+                { FE02I-VA-IONP-03, ts1_5, 01, 1, 500, 0, 0}    
+                { FE02I-VA-IONP-04, ts1_5, 01, 1, 500, 0, 0}    
+                { FE02I-VA-IONP-05, ts1_5, 01, 2, 150, 0, 0}    
+        }
+
+
+
+
+# Switch to force valve-sub.vm to use _asyn suffixed templates for FINS protocol
+
+
+
+
+# Valves (pneumatically actuated devices)
+#
+# substitutions:
+# device  - device name
+# device         - device name
+# port           - seral port number (from device manager table)
+# valve          - valve number (1-6 within PLC)
+# ilk0 ... ilk15 - interlock descriptions
+#
+# NOTE: Maximum 20 chars allowed for ZNAM field
+#
+
+# vacuum valve PLC
+#
+# Read back the data, this takes 100 words 0000-0099 every 2 seconds.
+#  dlsPLC_read100.template instance now expected in IOC build tree
+#  otherwise multiple copies are generated for the same records.
+
+
+
+file dlsPLC_vacValveDebounce.template
+{
+pattern { device, vlvcc     , port, addr, allowpv, whylocked, fins_timeout,
+          ilk0,
+          ilk1,
+          ilk2,
+          ilk3,
+          ilk4,
+          ilk5,
+          ilk6,
+          ilk7,
+          ilk8,
+          ilk9,
+          ilk10,
+          ilk11,
+          ilk12,
+          ilk13,
+          ilk14,
+          ilk15,
+          gilk0,
+          gilk1,
+          gilk2,
+          gilk3,
+          gilk4,
+          gilk5,
+          gilk6,
+          gilk7,
+          gilk8,
+          gilk9,
+          gilk10,
+          gilk11,
+          gilk12,
+          gilk13,
+          gilk14,
+          gilk15
+          }
+		 { FE02I-RS-ABSB-01 , FE02I-VA-VLVCC-01, vlvcc_fins_port , 10, "", "", "5.0",
+         "Air press. OK",
+         "Timeout",
+         "5 of 6 IMG",
+         "unused",
+         "VALVE-01 open",
+         "FVALV-01 open",
+         "SHTR-01 Open",
+         "SHTR-02 Open",
+         "VALVE-02 Open",
+         "Beamline MPS OK",
+         "V2 Air Debounce/2",
+         "APTR-02 cool.OK",
+         "APTR-03 cool.OK",
+         "APTR-04 cool.OK",
+         "PBPM Temps",
+         "ABSB-02 Open",
+         "FE02I-VA-GAUGE-01",
+         "FE02I-VA-GAUGE-02",
+         "FE02I-VA-GAUGE-03",
+         "FE02I-VA-GAUGE-04",
+         "FE02I-VA-GAUGE-05",
+         "FE02I-VA-GAUGE-06",
+         "FE02I-VA-FVI-01",
+         "FE02I-VA-FVI-02",
+         "FE02I-VA-FVI-03",
+         "FE02I-VA-FVI-04",
+         "",
+         "",
+         "",
+         "",
+         "",
+         ""
+          }
+		 { FE02I-VA-VALVE-01 , FE02I-VA-VLVCC-01, vlvcc_fins_port , 20, "", "", "5.0",
+         "Air press. OK",
+         "Limits Healthy",
+         "Open Limit OK",
+         "Move time OK",
+         "FE Init Vac (6of6)",
+         "FE Run Vac (4of6)",
+         "FVALV-01 open",
+         "FVALV-01 Armed",
+         "/FVALV Triggrd",
+         "PIRG-02 OK",
+         "PIRG-03 OK",
+         "IMG-02/IMG-03",
+         "IMG-04/IMG-05",
+         "ABS not clsd/5of6 IMG",
+         "unused",
+         "unused",
+         "FE02I-VA-GAUGE-01",
+         "FE02I-VA-GAUGE-02",
+         "FE02I-VA-GAUGE-03",
+         "FE02I-VA-GAUGE-04",
+         "FE02I-VA-GAUGE-05",
+         "FE02I-VA-GAUGE-06",
+         "FE02I-VA-FVI-01",
+         "FE02I-VA-FVI-02",
+         "FE02I-VA-FVI-03",
+         "FE02I-VA-FVI-04",
+         "",
+         "",
+         "",
+         "",
+         "",
+         ""
+          }
+		 { FE02I-VA-VALVE-02 , FE02I-VA-VLVCC-01, vlvcc_fins_port , 60, "", "", "5.0",
+         "Air press. OK",
+         "Limits Healthy",
+         "Open Limit OK",
+         "Move time OK",
+         "FE Init Vac (6of6)",
+         "FE Run Vac (4of6)",
+         "FVALV open",
+         "FVALV-01 Full Arm.",
+         "/FVALV Triggered",
+         "BL Init. Vac. OK",
+         "BL Run Vac. OK",
+         "PIRG-06 OK",
+         "Not Service Mode",
+         "Grd A or /V2 Close",
+         "Grd B or /V2 Close",
+         "FE-IMG6 & BL-IMG1",
+         "FE02I-VA-GAUGE-01",
+         "FE02I-VA-GAUGE-02",
+         "FE02I-VA-GAUGE-03",
+         "FE02I-VA-GAUGE-04",
+         "FE02I-VA-GAUGE-05",
+         "FE02I-VA-GAUGE-06",
+         "FE02I-VA-FVI-01",
+         "FE02I-VA-FVI-02",
+         "FE02I-VA-FVI-03",
+         "FE02I-VA-FVI-04",
+         "",
+         "",
+         "",
+         "",
+         "",
+         ""
+          }
+}
+
+file valveArchiver.template
+{
+pattern { device }
+        { FE02I-RS-ABSB-01 }
+		        { FE02I-VA-VALVE-01 }
+		        { FE02I-VA-VALVE-02 }
+		}
+
+
+
+
+
+# Fast Valves (pneumatically actuated devices)
+#
+# substitutions:
+# device  - device name
+# device         - device name
+# port           - seral port number (from device manager table)
+# valve          - valve number (1-6 within PLC)
+# ilk0 ... ilk15 - interlock descriptions
+#
+# NOTE: Maximum 20 chars allowed for ZNAM field
+#
+# -- REAL --
+#file feFastValve_asyn.template
+file dlsPLC_feFastValve.template
+{
+pattern { device, vlvcc  , port, addr, parmbits, farmbits,
+          ilk0, 
+          ilk1, 
+          ilk2, 
+          ilk3, 
+          ilk4, 
+          ilk5, 
+          ilk6, 
+          ilk7, 
+          ilk8, 
+          ilk9,
+          ilk10,
+          ilk11,
+          ilk12,
+          ilk13,
+          ilk14,
+          ilk15, 
+          gilk0,
+          gilk1,
+          gilk2,
+          gilk3,
+          gilk4,
+          gilk5,
+          gilk6,
+          gilk7,
+          gilk8,
+          gilk9,
+          gilk10,
+          gilk11,
+          gilk12,
+          gilk13,
+          gilk14,
+          gilk15 }
+          
+          
+       
+
+         { FE02I-VA-FVALV-01 , FE02I-VA-VLVCC-01, vlvcc_fins_port , 70, 16, 16,
+         "Remote Mode",
+         "Limits Healthy",
+         "Open Limit OK",
+         "Move time OK",
+         "FE Init. Vac. OK",
+         "PIRG-03 OK",
+         "PIRG-04 OK",
+         "/FCTRL-01 Triggrd",
+         "/FCTRL-02 Triggrd",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "FE02I-VA-GAUGE-01",
+         "FE02I-VA-GAUGE-02",
+         "FE02I-VA-GAUGE-03",
+         "FE02I-VA-GAUGE-04",
+         "FE02I-VA-GAUGE-05",
+         "FE02I-VA-GAUGE-06",
+         "FE02I-VA-FVI-01",
+         "FE02I-VA-FVI-02",
+         "FE02I-VA-FVI-03",
+         "FE02I-VA-FVI-04",
+         "",
+         "",
+         "",
+         "",
+         "",
+         ""
+          }
+		}
+
+file valveArchiver.template
+{
+pattern { device }
+        { FE02I-VA-FVALV-01 }
+		}
+
+
+
+
+# Valves (pneumatically actuated devices)
+#
+# substitutions:
+# device  - device name
+# device         - device name
+# port           - seral port number (from device manager table)
+# valve          - valve number (1-6 within PLC)
+# ilk0 ... ilk15 - interlock descriptions
+#
+# NOTE: Maximum 20 chars allowed for ZNAM field
+#
+
+# vacuum valve PLC
+#
+# Read back the data, this takes 100 words 0000-0099 every 2 seconds.
+#  dlsPLC_read100.template instance now expected in IOC build tree
+#  otherwise multiple copies are generated for the same records.
+
+
+
+file dlsPLC_vacValveDebounce.template
+{
+pattern { device, vlvcc     , port, addr, allowpv, whylocked, fins_timeout,
+          ilk0,
+          ilk1,
+          ilk2,
+          ilk3,
+          ilk4,
+          ilk5,
+          ilk6,
+          ilk7,
+          ilk8,
+          ilk9,
+          ilk10,
+          ilk11,
+          ilk12,
+          ilk13,
+          ilk14,
+          ilk15,
+          gilk0,
+          gilk1,
+          gilk2,
+          gilk3,
+          gilk4,
+          gilk5,
+          gilk6,
+          gilk7,
+          gilk8,
+          gilk9,
+          gilk10,
+          gilk11,
+          gilk12,
+          gilk13,
+          gilk14,
+          gilk15
+		  ,
+          tclose_high,           
+          tclose_hihi,           
+          tclose_hsv,           
+          tclose_hhsv
+          }
+		 { FE02I-PS-SHTR-01 , FE02I-VA-VLVCC-01, vlvcc_fins_port , 40, "", "", "5.0",
+         "Air press. OK",
+         "Limits Healthy",
+         "Open Limit OK",
+         "Move time OK",
+         "PSS FE PShtr Pmt",
+         "PSS BL G Pmt3 PShtr",
+         "Gas Brem. ID Gap",
+         "/Radmon Reset",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "FE02I-VA-GAUGE-01",
+         "FE02I-VA-GAUGE-02",
+         "FE02I-VA-GAUGE-03",
+         "FE02I-VA-GAUGE-04",
+         "FE02I-VA-GAUGE-05",
+         "FE02I-VA-GAUGE-06",
+         "FE02I-VA-FVI-01",
+         "FE02I-VA-FVI-02",
+         "FE02I-VA-FVI-03",
+         "FE02I-VA-FVI-04",
+         "",
+         "",
+         "",
+         "",
+         "",
+         ""
+		  ,
+		  3.0,
+		  5.0,
+		  MINOR,
+		  MAJOR,
+          }
+		 { FE02I-PS-SHTR-02 , FE02I-VA-VLVCC-01, vlvcc_fins_port , 50, "", "", "5.0",
+         "Air press. OK",
+         "Limits Healthy",
+         "Open Limit OK",
+         "Move time OK",
+         "PSS BL OH1 Shtr GLA",
+         "PSS BL OH1 Shtr GLB",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "unused",
+         "FE02I-VA-GAUGE-01",
+         "FE02I-VA-GAUGE-02",
+         "FE02I-VA-GAUGE-03",
+         "FE02I-VA-GAUGE-04",
+         "FE02I-VA-GAUGE-05",
+         "FE02I-VA-GAUGE-06",
+         "FE02I-VA-FVI-01",
+         "FE02I-VA-FVI-02",
+         "FE02I-VA-FVI-03",
+         "FE02I-VA-FVI-04",
+         "",
+         "",
+         "",
+         "",
+         "",
+         ""
+		  ,
+		  3.0,
+		  5.0,
+		  MINOR,
+		  MAJOR,
+          }
+}
+
+file valveArchiver.template
+{
+pattern { device }
+        { FE02I-PS-SHTR-01 }
+		        { FE02I-PS-SHTR-02 }
+		}
+
+
+
+
+
+
+
+# MPS Permit 
+#
+# substitutions:
+# device         - device name
+# port           - seral port number (from device manager table)
+# permit         - (valve) number (1-6 within PLC)
+# ilk0 ... ilk15 - interlock descriptions
+#
+# NOTE: Maximum 20 chars allowed for ZNAM field
+#
+# This is a special case template for the MPS permit, which is
+# available as one of the valve ports on the VCC PLC.
+# However, the concept of 'opening' and 'closing' for MPS
+# is not applicable - hence the special case implementation.
+#
+# -- REAL --
+file dlsPLC_mpsPermit.template
+{
+pattern { device, vlvcc, port, addr,
+          ilk0, 
+          ilk1, 
+          ilk2, 
+          ilk3, 
+          ilk4, 
+          ilk5, 
+          ilk6, 
+          ilk7, 
+          ilk8, 
+          ilk9,
+          ilk10,
+          ilk11,
+          ilk12,
+          ilk13,
+          ilk14,
+          ilk15 }
+       
+         { FE02I-MP-PERMT-01 , FE02I-VA-VLVCC-01, vlvcc_fins_port , 80,
+         "ABSB-01 OK",
+         "Operational Mode",
+         "Beamline MPS OK",
+         "/FCTRL-01 Triggrd",
+         "/FCTRL-02 Triggrd",
+         "/VALVE-01 closing",
+         "/FFLAP-01 closing",
+         "unused",
+         "unused",
+         "VALVE-02 Open",
+         "ABSB-01 cool. OK",
+         "PBPMs cool. OK",
+         "ABSB temps OK",
+         "unused",
+         "RIO Healthy",
+         "unused" }
+		}
+
+
+
+
+# PLC Info
+#
+# substitutions:
+# device - IOC
+# port
+#
+# !!! This needs a new equivalent for FINS support - not HostLink !!!
+#
+
+
+# One unassigned asynRecord for general front-end asyn debugging
+#
+# substitutions:
+# device - empty
+#
+file asynRec.template
+{
+pattern { device, PORT }
+        { FE02I-CS-IOC-01:ASYN , "" }
+}
+
+file dlssrstatus.template 
+{ 
+pattern { device } 
+        { FE02I-CS-IOC-01:SR } 
+}
+
+file dlssrfile.template 
+{ 
+pattern { device                        , file } 
+        { FE02I-CS-IOC-01:SR   , 0 } 
+        { FE02I-CS-IOC-01:SR   , 1 } 
+        { FE02I-CS-IOC-01:SR   , 2 } 
+}
+
+file FINS.template
+{
+pattern { device                        , port}
+        { FE02I-CS-PLC-01      , "vlvcc_fins_port" }
+}
+
+file BLFEControl.template 
+{
+pattern { BEAMLINE      , ABSB }
+             { "02I"    , "01" }
+}
+
+
+file dig.template
+{
+pattern { device }
+    { "02I" }
+}
+
+file ioc.db
+    {
+    pattern { IOCNAME }
+     	    { FE02I-CS-IOC-01 }
+    }
+
+#
+# Establish PLC reads for:
+# Valve control/status: DM0XX
+# temperature sensors:  DM1XX and DM2XX
+# ABSB-01 (device 1) close time metric ()in D1111): DM11XX
+#
+file dlsPLC_read100.template
+    {
+    pattern{ device                     , port             , century }
+           { FE02I-VA-VLVCC-01 , "vlvcc_fins_port",  "0"    }
+           { FE02I-VA-VLVCC-01 , "vlvcc_fins_port",  "1"    }
+           { FE02I-VA-VLVCC-01 , "vlvcc_fins_port",  "2"    }
+           { FE02I-VA-VLVCC-01 , "vlvcc_fins_port", "11"    }
+    }
+
+file dlsPLC_temperature.template
+    {
+    pattern{ device                   , temp         , offset, desc            , low, lolo, high, hihi, lopr, hopr, tmpcc                     , port              }
+           { FE02I-AL-APTR-01, ":TMON01:C"  , 10    , "APTR-01 Temp 1", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-01, ":TMON02:C"  , 11    , "APTR-01 Temp 2", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-RS-ABSB-01, ":TMON01:C"  , 12    , "ABSB-01 Temp 1", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-RS-ABSB-01, ":TMON02:C"  , 13    , "ABSB-01 Temp 2", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-RS-ABSB-01, ":TMON03:C"  , 14    , "ABSB-01 Temp 3", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-RS-ABSB-01, ":TMON04:C"  , 15    , "ABSB-01 Temp 4", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-DI-PBPM-01, ":TMON01:C"  , 16    , "PBPM-01 Temp 1", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-DI-PBPM-01, ":TMON02:C"  , 17    , "PBPM-01 Temp 2", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-03, ":TMON01:C"  , 18    , "APTR-03 Temp 1", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-03, ":TMON02:C"  , 19    , "APTR-03 Temp 2", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-03, ":TMON03:C"  , 20    , "APTR-03 Temp 3", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-03, ":TMON04:C"  , 21    , "APTR-03 Temp 4", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-04, ":TMON01:C"  , 22    , "APTR-04 Temp 1", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-04, ":TMON02:C"  , 23    , "APTR-04 Temp 2", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-04, ":TMON03:C"  , 24    , "APTR-04 Temp 3", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-04, ":TMON04:C"  , 25    , "APTR-04 Temp 4", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-RS-ABSB-02, ":TMON01:C"  , 26    , "ABSB-02 Temp 1", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-RS-ABSB-02, ":TMON02:C"  , 27    , "ABSB-02 Temp 2", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-RS-ABSB-02, ":TMON03:C"  , 28    , "ABSB-02 Temp 3", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-RS-ABSB-02, ":TMON04:C"  , 29    , "ABSB-02 Temp 4", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-02, ":TMON01:C"  , 30    , "APTR-02 Temp 1", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-AL-APTR-02, ":TMON02:C"  , 31    , "APTR-02 Temp 2", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-DI-PBPM-02, ":TMON01:C"  , 32    , "PBPM-02 Temp 1", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+           { FE02I-DI-PBPM-02, ":TMON02:C"  , 33    , "PBPM-02 Temp 2", 10 , 5   , 45  , 50  , 0   , 200 , FE02I-VA-VLVCC-01, "vlvcc_fins_port" }
+    }
+
+file dlsPLC_digio.template
+    {
+    pattern{ device                    , vlvcc                     }
+           { FE02I-VA-VLVCC-01, FE02I-VA-VLVCC-01}
+    }
+    
+file flowmeter.template
+    {
+    pattern{ device                    , port           , daddr}
+           { FE02I-HO-FLMTR-01, vlvcc_fins_port, 310  }
+    }
+
+# ABSB-01 TCLOSE metrics in D1111 for RIO systems
+#
+# substitutions:
+# device          - device attached to VLVCC port
+# vlvcc_fins_port - asyn driver port to PLC
+# century         - TCLOSE is read from D1111, so century = 11 and index = 11
+# index           - offset into century block
+#
+# Simon Lay advised that for absorbers, HIGH => 1.5s, HIHI => 3.0s
+#
+file dlsPLC_vacValveTclose.template
+{
+pattern { device                    , vlvcc                      , port            , century , index, tclose_high, tclose_hihi, tclose_hsv, tclose_hhsv }
+        { FE02I-RS-ABSB-01 , FE02I-VA-VLVCC-01 , vlvcc_fins_port , 11      , 11   ,  1.5       ,  3.0       , "MINOR"   , "MAJOR"     }
+}
+
+
+#file dbcar.template
+#    {
+#    pattern{ device                  }
+#           { FE02I-CS-IOC-01}
+#    }
+
+
+#
+# Air Pressure monitoring via Hy8401 ADC
+#
+file airpressure.template
+{
+pattern { device                    , adc }
+        { FE02I-RS-PSENS-01, FE02I-CS-ADC-05:INPUT1:VALUE }
+}
+
+file dlsPLC_CommsStatus.template
+    {
+    pattern { device }
+            { FE02I-VA-VLVCC-01 }
+
+    }
+
+
+
