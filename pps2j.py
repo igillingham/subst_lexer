@@ -110,6 +110,6 @@ if __name__ == '__main__':
     This will need to be replaced with argument parsing, so the user can specify the substitutions file and
     output format.
     """
-    fname = 'FE02I-CS-IOC-01.substitutions'
+    fname = 'test.substitutions'
 
     substitutions = main(fname)
