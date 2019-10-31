@@ -101,7 +101,7 @@ class FileHandler(object):
                     line = line.strip()
                     if line.startswith('#'):
                         attr = LineAttributes.COMMENT
-                    elif line.startswith('{') and line.endswith('}'):
+                    elif line.startswith('{'):
                         attr = LineAttributes.MACROS
         return line, attr
 
