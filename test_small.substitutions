@@ -1,0 +1,29 @@
+
+# Macros:
+#  DEVICE   EtherCAT slave
+#  CHANNEL  ADC channel
+#  PORT     asyn port for EtherCAT slave
+#  SAMPLES  number of samples in waveform
+#  SCAN     polling period
+#  INTSCAN  polling period for the INTERRUPT parameter
+#  name     name for gui element
+file $(ETHERCAT)/db/gadc.template
+{
+pattern { DEVICE           , CHANNEL, PORT    , SAMPLES, SCAN      , INTSCAN   , name  }
+        { "FE02I-CS-ADC-02", "1"    , "AI1"   , "10"  , "I/O Intr", "I/O Intr", "GT1" }
+        { "FE02I-CS-ADC-02", "2"    , "AI1"   , "10"  , "I/O Intr", "I/O Intr", "GT2" }
+        { "FE02I-CS-ADC-03", "1"    , "AI2"   , "10"  , "I/O Intr", "I/O Intr", "GT3" }
+        { "FE02I-CS-ADC-03", "2"    , "AI2"   , "10"  , "I/O Intr", "I/O Intr", "GT4" }
+        { "FE02I-CS-ADC-04", "1"    , "AI3"   , "10"  , "I/O Intr", "I/O Intr", "GT5" }
+        { "FE02I-CS-ADC-04", "2"    , "AI3"   , "10"  , "I/O Intr", "I/O Intr", "GT6" }
+}
+
+file dlsPLC_vacValveGroup.template
+{
+pattern { device, delay, valve1, valve2, valve3, valve4, valve5, valve6, valve7, valve8 }
+
+        { FE02I-VA-GVALV-01 , 0 ,
+          FE02I-VA-VALVE-01 , FE02I-VA-VALVE-01 , FE02I-VA-VALVE-01 , FE02I-VA-VALVE-01 ,
+          FE02I-VA-VALVE-01 , FE02I-VA-VALVE-01 , FE02I-VA-VALVE-01 , FE02I-VA-VALVE-02 
+        }
+}

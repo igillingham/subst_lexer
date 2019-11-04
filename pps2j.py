@@ -22,7 +22,7 @@ Ian Gillingham, October 2019
 
 
 from pyparsing import (Suppress, removeQuotes, quotedString, originalTextFor,
-                       OneOrMore, Word, printables, nestedExpr, delimitedList,
+                       OneOrMore, Word, printables, nestedExpr, delimitedList, Dict, dictOf,
                        ParseException, alphanums, SkipTo, Group, restOfLine, CharsNotIn, lineEnd, Keyword)
 
 import pprint
@@ -49,11 +49,11 @@ def substfile_bnf():
 
     :return: PyParser BNF Expression
     """
-    expr = Group(OneOrMore(Keyword('file') + originalTextFor(Word(alphanums+'_$()/') + '.template')
-           + l_brace
-           + pattern_bnf()
-           + OneOrMore(instance_bnf())
-           + r_brace))
+    expr = Keyword('file') + originalTextFor(Word(alphanums+'_$()/') + '.template')\
+           + l_brace\
+           + pattern_bnf()\
+           + OneOrMore(instance_bnf())\
+           + r_brace
     # Defines comments
     expr.ignore('#' + restOfLine)
 
@@ -77,7 +77,7 @@ def instance_bnf():
 
     :return: PyParser BNF Expression
     """
-    arg = OneOrMore(Word(printables, excludeChars='{},').setResultsName('macro*', listAllMatches=True))
+    arg = OneOrMore(Word(printables, excludeChars='{},')).setParseAction(' '.join)  # Reconnect words with spaces as one
     expr = l_brace + Group(delimitedList(arg)) + r_brace
     return expr
 
@@ -91,9 +91,12 @@ def main(filename):
     tokens = None
     try:
         bnf = substfile_bnf()
+        # tokens = Dict(bnf).parseFile(filename)
         tokens = bnf.parseFile(filename)
+        pp.pprint("As list:================================================")
         pp.pprint(tokens.asList())
-        # pp.pprint(tokens.asDict())
+        pp.pprint("As dict:================================================")
+        pp.pprint(tokens.asDict())
 
     except ParseException as err:
         print(err.line)
@@ -110,6 +113,6 @@ if __name__ == '__main__':
     This will need to be replaced with argument parsing, so the user can specify the substitutions file and
     output format.
     """
-    fname = 'test.substitutions'
+    fname = 'test_small.substitutions'
 
     substitutions = main(fname)
